@@ -44,7 +44,12 @@ def button_changed(pin):
         print("You released the button!")
     addMetric(outboundPayload, "button", None, MetricDataType.Boolean, buttonValue);
     byteArray = bytearray(outboundPayload.SerializeToString())
-    client.publish("spBv1.0/" + myGroupId + "/DDATA/" + myNodeName + "/" + mySubNodeName, byteArray, 0, False)
+    client.publish(
+        f"spBv1.0/{myGroupId}/DDATA/{myNodeName}/{mySubNodeName}",
+        byteArray,
+        0,
+        False,
+    )
 
 ######################################################################
 # Input change event handler
@@ -64,7 +69,13 @@ def input_changed(name, pin):
         outboundPayload = sparkplug.getDdataPayload()
         addMetric(outboundPayload, name, None, MetricDataType.Boolean, pin.read());
         byteArray = bytearray(outboundPayload.SerializeToString())
-        client.publish("spBv1.0/" + myGroupId + "/DDATA/" + myNodeName + "/" + mySubNodeName, byteArray, 0, False)
+        client.publish(
+            f"spBv1.0/{myGroupId}/DDATA/{myNodeName}/{mySubNodeName}",
+            byteArray,
+            0,
+            False,
+        )
+
     finally:
         lock.release()
 ######################################################################
@@ -75,12 +86,12 @@ def input_changed(name, pin):
 def on_connect(client, userdata, flags, rc):
     global myGroupId
     global myNodeName
-    print("Connected with result code "+str(rc))
+    print(f"Connected with result code {str(rc)}")
 
     # Subscribing in on_connect() means that if we lose the connection and
     # reconnect then subscriptions will be renewed.
-    client.subscribe("spBv1.0/" + myGroupId + "/NCMD/" + myNodeName + "/#")
-    client.subscribe("spBv1.0/" + myGroupId + "/DCMD/" + myNodeName + "/#")
+    client.subscribe(f"spBv1.0/{myGroupId}/NCMD/{myNodeName}/#")
+    client.subscribe(f"spBv1.0/{myGroupId}/DCMD/{myNodeName}/#")
 ######################################################################
 
 ######################################################################
@@ -188,7 +199,7 @@ def publishBirths():
 
     # Publish the NBIRTH certificate
     byteArray = bytearray(payload.SerializeToString())
-    client.publish("spBv1.0/" + myGroupId + "/NBIRTH/" + myNodeName, byteArray, 0, False)
+    client.publish(f"spBv1.0/{myGroupId}/NBIRTH/{myNodeName}", byteArray, 0, False)
 
     # Set up the DBIRTH with the input metrics
     payload = sparkplug.getDeviceBirthPayload()
@@ -212,7 +223,12 @@ def publishBirths():
 
     # Publish the initial data with the DBIRTH certificate
     totalByteArray = bytearray(payload.SerializeToString())
-    client.publish("spBv1.0/" + myGroupId + "/DBIRTH/" + myNodeName + "/" + mySubNodeName, totalByteArray, 0, False)
+    client.publish(
+        f"spBv1.0/{myGroupId}/DBIRTH/{myNodeName}/{mySubNodeName}",
+        totalByteArray,
+        0,
+        False,
+    )
 ######################################################################
 
 # Create the NDEATH payload
@@ -224,7 +240,10 @@ client.on_connect = on_connect
 client.on_message = on_message
 client.username_pw_set(myUsername, myPassword)
 deathByteArray = bytearray(deathPayload.SerializeToString())
-client.will_set("spBv1.0/" + myGroupId + "/NDEATH/" + myNodeName, deathByteArray, 0, False)
+client.will_set(
+    f"spBv1.0/{myGroupId}/NDEATH/{myNodeName}", deathByteArray, 0, False
+)
+
 client.connect(serverUrl, 1883, 60)
 
 # Short delay to allow connect callback to occur

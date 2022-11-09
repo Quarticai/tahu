@@ -255,7 +255,7 @@ def addMetric(container, name, alias, type, value, timestamp=int(round(time.time
         metric.datatype = MetricDataType.Template
         metric.template_value = value
     else:
-        print( "Invalid: " + str(type))
+        print(f"Invalid: {str(type)}")
 
     # Return the metric
     return metric
@@ -325,7 +325,7 @@ def addNullMetric(container, name, alias, type):
     elif type == MetricDataType.Template:
         metric.datatype = MetricDataType.Template
     else:
-        print( "Invalid: " + str(type))
+        print(f"Invalid: {str(type)}")
 
     # Return the metric
     return metric
