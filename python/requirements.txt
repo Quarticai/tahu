@@ -1,0 +1,2 @@
+--extra-index-url https://pypi.fury.io/cofDNgE692FsjZ5iiShW/quartic-ai/
+quartic_tahu>=0.0.0
