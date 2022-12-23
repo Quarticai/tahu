@@ -31,14 +31,18 @@ def control_on_message(client, userdata, msg):
         print("*** Result ***",  msg.payload)
 
 def control_on_connect(client, userdata, flags, rc):
-    print("Control client connected with result code "+str(rc))
+    print(f"Control client connected with result code {str(rc)}")
     # Subscribing in on_connect() means that if we lose the connection and
     # reconnect then subscriptions will be renewed.
     client.subscribe("SPARKPLUG_TCK/#")
 
 def control_on_subscribe(client, userdata, mid, granted_qos):
     print("Control client subscribed")
-    rc = client.publish("SPARKPLUG_TCK/TEST_CONTROL", "NEW host SessionEstablishment " + host_application_id, qos=1)
+    rc = client.publish(
+        "SPARKPLUG_TCK/TEST_CONTROL",
+        f"NEW host SessionEstablishment {host_application_id}",
+        qos=1,
+    )
 
 published = False
 def control_on_publish(client, userdata, mid):
@@ -59,12 +63,12 @@ while published == False:
     time.sleep(0.1)
 
 def test_on_connect(client, userdata, flags, rc):
-    print("Test client connected with result code "+str(rc))
+    print(f"Test client connected with result code {str(rc)}")
     client.subscribe("spAv1.0/#")
 
 def test_on_subscribe(client, userdata, mid, granted_qos):
     print("Test client subscribed")
-    client.publish("STATE/"+host_application_id, "ONLINE", qos=1)
+    client.publish(f"STATE/{host_application_id}", "ONLINE", qos=1)
 
 published = False
 def test_on_publish(client, userdata, mid):
@@ -76,7 +80,10 @@ client = mqtt.Client("clientid", clean_session=True)
 client.on_connect = test_on_connect
 client.on_subscribe = test_on_subscribe
 client.on_publish = test_on_publish
-client.will_set(topic="STATE/"+host_application_id, payload="OFFLINE", qos=1, retain=True)
+client.will_set(
+    topic=f"STATE/{host_application_id}", payload="OFFLINE", qos=1, retain=True
+)
+
 client.connect(broker, port)
 client.loop_start()
 
@@ -87,7 +94,7 @@ client.loop_stop()
 
 published = False
 control_client.publish("SPARKPLUG_TCK/TEST_CONTROL", "END TEST")
-while published == False:
+while not published:
     time.sleep(0.1)
 
 control_client.loop_stop()
